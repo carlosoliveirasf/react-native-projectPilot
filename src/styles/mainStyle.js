@@ -10,6 +10,9 @@ export const styles = StyleSheet.create({
     list: {
         padding: 20
     },
+    progress: {
+        margin: 10,
+    },
     itemContainer: {
         backgroundColor: '#FFF',
         borderWidth: 1,
@@ -33,7 +36,7 @@ export const styles = StyleSheet.create({
         height: 42,
         borderRadius: 5,
         borderWidth: 2,
-        borderColor: '#DA552F',
+        borderColor: '#002376',
         backgroundColor: 'transparent',
         justifyContent: 'center',
         alignItems: 'center',
@@ -43,15 +46,41 @@ export const styles = StyleSheet.create({
     },
     materialButtonText: {
         fontSize: 16,
-        color: '#DA552F',
+        color: '#002376',
+        fontWeight: 'bold'
+    },
+    materialSearchButtonText: {
+        fontSize: 16,
+        color: '#ffffff',
+        fontWeight: 'bold'
+    },
+    materialFavoriteButton: {
+        height: 42,
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: '#e50000',
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 10,
+        marginHorizontal: 20
+    },
+    materialFavoriteButtonText: {
+        fontSize: 16,
+        color: '#e50000',
         fontWeight: 'bold'
     },
     input: {
         backgroundColor: '#FFF',
-        marginTop: 20, 
+        marginTop: 10,
+        marginBottom: 10,
+        marginHorizontal: 20,
+        paddingHorizontal: 20,
         height: 50,
         fontSize: 15,
-        marginHorizontal: 20
+        borderColor: '#3450A8',
+        borderWidth: 1
     }
 })
 

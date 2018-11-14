@@ -14,7 +14,7 @@ export const MaterialSchema = {
 
 const databaseOptions = {
     path: 'rocketseat.realm',
-    schema: [MATERIAL_SCHEMA],
+    schema: [MaterialSchema],
     schemaVersion: 0
 }
 
@@ -37,13 +37,13 @@ export const removeFavoriteMaterial = favoriteId => new Promise((resolve, reject
     }).catch((error) => reject(error))
 }) 
 
-export const getAllMaterials = () => new Promise((resolve, reject) => {
-    Realm.open(databaseOptions).then(realm => {
-        let allMaterials = realm.objects(MATERIAL_SCHEMA)
-        resolve(allMaterials)
-    }).catch((error) => {
+export const queryAllMaterials = () => new Promise((resolve, reject) => {    
+    Realm.open(databaseOptions).then(realm => {        
+        let allMaterials = realm.objects(MATERIAL_SCHEMA);
+        resolve(allMaterials);  
+    }).catch((error) => {        
         reject(error)
     })
-})  
+})
 
 export default new Realm(databaseOptions)

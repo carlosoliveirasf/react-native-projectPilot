@@ -1,16 +1,19 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 
-import { View, Text, FlatList, TouchableOpacity, TextInput } from 'react-native'
-import {styles} from '../styles/mainStyle'
+import { View, Text, FlatList, TouchableOpacity, TextInput, Alert, ToastAndroid } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
+import { styles } from '../styles/mainStyle'
 import api from '../services/api'
+import * as Progress from 'react-native-progress';
 
-import realm, {insertFavoriteMaterial} from '../repository/allSchema'
+import realm, { insertFavoriteMaterial } from '../repository/allSchema'
 
 
 export default class SearchTab extends Component {
     state = {
         resultData: [],
-        userInput: ''
+        userInput: '',
+        progressBarVisibility: false
     }
 
     componentDidMount() {
@@ -32,22 +35,34 @@ export default class SearchTab extends Component {
             <Text style={styles.materialName}>{item.Title.replace(/<[^>]*>/g, '')}</Text>
             <Text style={styles.materialUniversityName}>{item.Subject.Name}</Text>
             <Text style={styles.materialUniversityName}>{item.UniversityShortName}</Text>
-            <TouchableOpacity onPress={this.favoritarMaterial(item)} style={styles.materialButton}>
+            <TouchableOpacity style={styles.materialButton}
+                onPress={() =>
+                    this.favoritarMaterial(item)
+                }>
                 <Text style={styles.materialButtonText}>Favoritar</Text>
             </TouchableOpacity>
-        </View> 
+        </View>
     )
 
-    favoritarMaterial = material => {
+    favoritarMaterial = item => {
         const novoMaterial = {
-            id: material.Id,
-            title: material.Title.replace(/<[^>]*>/g, ''),
-            subjectName: material.Subject.Name,
-            universityShortName: material.universityShortName
+            id: item.Id,
+            title: item.Title.replace(/<[^>]*>/g, ''),
+            subjectName: item.Subject.Name,
+            universityShortName: item.UniversityShortName
         }
-
         insertFavoriteMaterial(novoMaterial).then().catch((error) => {
-            alert(`Insert new Material error ${error}`)
+            Alert.alert(
+                'Ops...',
+                'Você já favoritou esse material.',
+                [
+                    {
+                        text: 'Ok', onPress: () => { },
+                        style: 'cancel'
+                    },
+                    { cancelable: true }
+                ]
+            )
         })
     }
 
@@ -57,13 +72,21 @@ export default class SearchTab extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <TextInput value={this.state.userInput} 
-                    style={styles.input} 
-                    onChangeText={this.alterarTexto}/>
-                <TouchableOpacity onPress= { this.loadProducts }
-                    style={styles.materialButton}>
-                    <Text style={styles.materialButtonText}>Pesquisar</Text>
+           <View style={styles.container}>
+                    <TextInput value={this.state.userInput}
+                    style={styles.input}
+                    underlineColorAndroid="transparent"
+                    placeholder="Digite aqui..."
+                    placeholderTextColor="#D3D3D3"
+                    onChangeText={this.alterarTexto} />
+                <TouchableOpacity onPress={this.loadProducts}>
+                    <LinearGradient
+                        start={{ x: 0.0, y: 0.25 }} end={{ x: 0.5, y: 1.0 }}
+                        locations={[0, 0.5, 0.6]}
+                        colors={['#4c669f', '#3b5998', '#192f6a']}
+                        style={styles.materialButton}>
+                        <Text style={styles.materialSearchButtonText}>Pesquisar</Text>
+                    </LinearGradient>
                 </TouchableOpacity>
                 <FlatList
                     contentContainerStyle={styles.list}

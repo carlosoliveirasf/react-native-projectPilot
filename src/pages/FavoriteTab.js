@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 
-import { View, Text, FlatList, FlatListItem, TouchableOpacity, TextInput, Alert } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, TextInput, Alert } from 'react-native'
 import {styles} from '../styles/mainStyle'
-import { getAllMaterials } from '../repository/allSchema'
+import { queryAllMaterials, removeFavoriteMaterial } from '../repository/allSchema'
 import Swipeout from 'react-native-swipeout'
+import realm from '../repository/allSchema';
 
 let FlatListItem = props =>  {
     const {itemIndex, id, title, subjectName, universityName, popupDialogComponent, onPressItem } = props
@@ -11,22 +12,7 @@ let FlatListItem = props =>  {
 
     }
     showDeleteConfirmation = () => {
-        Alert.alert (
-            'Delete', 
-            'Deletar um material',
-            [
-                {
-                    text: 'Não', onPress: () => {},
-                    style: 'cancel'
-                },
-                {
-                    text: 'Sim', onPress: () => {
-
-                    }
-                },
-                { cancelable: true }
-            ]
-        )
+        
     }
 
     return (
@@ -42,37 +28,68 @@ let FlatListItem = props =>  {
     )
 }
 
-
 export default class FavoriteTab extends Component {
     constructor(props){
         super(props)
         this.state = {
             materialList: []
         }
+        this.reloadData();
+        realm.addListener('change', () => {
+            this.reloadData();
+        });
+    }
+
+    deleteMaterial = item => {
+        Alert.alert (
+            'Atenção!', 
+            'Deseja remover o material da lista de favoritos?',
+            [
+                {
+                    text: 'Não', onPress: () => {},
+                    style: 'cancel'
+                },
+                {
+                    text: 'Sim', onPress: () => {
+                        removeFavoriteMaterial(item.id).then().catch((error) => {
+                            alert(`Insert new Material error ${error}`)
+                        })
+                    }
+                },
+                { cancelable: true }
+            ]
+        )
     }
 
     reloadData = () => {
-        getAllMaterials().then((materialList) => {
-            this.setState({materialList})
+        queryAllMaterials().then((materialList) => {
+            this.setState({ materialList });
         }).catch((error) => {
-            this.setState({ materialList: []})
-        })
+            this.setState({ materialList: [] });
+        });
     }
+
+    renderItem = ({ item }) => (
+        <View style={styles.itemContainer}>
+            <Text style={styles.materialName}>{item.title.replace(/<[^>]*>/g, '')}</Text>
+            <Text style={styles.materialUniversityName}>{item.subjectName}</Text>
+            <Text style={styles.materialUniversityName}>{item.universityShortName}</Text>
+            <TouchableOpacity 
+            onPress={ () => {this.deleteMaterial(item)} } 
+            style={styles.materialFavoriteButton}>
+                <Text style={styles.materialFavoriteButtonText}>Remover</Text>
+            </TouchableOpacity>
+        </View> 
+    )
 
     render() {
         return (
             <View style={styles.container}>
                 <FlatList
+                    contentContainerStyle={styles.list}
                     data={this.state.materialList}
-                    style={styles.list}
-                    renderItem={({item, index }) => <FlatListItem {...item} itemIndex={index}
-                        popupDialogComponent={this.refs.popupDialogComponent}
-                    onPressItem ={() => {
-                        alert(`You pressed item`)
-                    }} />}
-                    keyExtractor={item => item.Id}
-                    />
-                <popupDialogComponent ref = {'popupDialogComponent'}/>
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={this.renderItem} />
             </View>
         )
     }
